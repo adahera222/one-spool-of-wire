@@ -1,5 +1,6 @@
 package states 
 {
+	import entities.Player;
 	import org.axgl.AxGroup;
 	import org.axgl.AxState;
 	import org.axgl.tilemap.AxTilemap;
@@ -23,6 +24,8 @@ package states
 	{
 		private var TILEMAP_COLLIDER:AxCollider;
 		private var collidables:AxGroup;
+		
+		private var player:Player;
 		
 		override public function create():void {			
 			var reader:TiledReader = new TiledReader;
@@ -49,7 +52,7 @@ package states
 						switch(object.type) {
 							case "player":
 								// add the main player
-								//add(player = new Player(object.x, object.y - Tile.WIDTH));
+								add(player = new Player(object.x, object.y - Tile.WIDTH));
 								break;
 							case "buoy":
 								// add a buoy
@@ -67,7 +70,7 @@ package states
 			}
 			
 			Ax.camera.bounds = new AxRect(0, 0, map.width * Tile.WIDTH, map.height * Tile.HEIGHT);
-			//Ax.camera.follow(player);
+			Ax.camera.follow(player);
 			FlashConnect.trace("GameState created.");
 		}
 		
