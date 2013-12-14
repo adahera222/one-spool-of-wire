@@ -13,6 +13,7 @@ package entities
 	import org.axgl.AxU;
 	import org.axgl.AxVector;
 	import org.flashdevelop.utils.FlashConnect;
+	import nape.phys.Material;
 	
 	/**
 	 * ...
@@ -20,7 +21,8 @@ package entities
 	 */
 	public class Player extends AxSprite 
 	{
-		private const ROTATION:Number = Math.PI/4;
+		private const ROTATION:Number = 2;
+		private const MASS:Number = 1;
 		
 		private var pedal:Number;
 		private var body:Body;
@@ -36,6 +38,8 @@ package entities
 			body = new Body(BodyType.DYNAMIC);
 			body.shapes.add(new Circle(Tile.WIDTH / 2));
 			body.position = new Vec2(x, y);
+			body.mass = MASS;
+			body.setShapeMaterials(Material.wood());
 			body.space = space;
 		}
 		
@@ -45,22 +49,27 @@ package entities
 			x = body.position.x;
 			y = body.position.y;
 			
-			if (Ax.keys.down(AxKey.RIGHT) || Ax.keys.down(AxKey.D)) {
-				angle += ROTATION;
-			}
-			else if (Ax.keys.down(AxKey.LEFT) || Ax.keys.down(AxKey.A)) {
-				angle -= ROTATION;
-			}
-			
 			if (Ax.keys.down(AxKey.SPACE)) {
-				pedal = 150;
+				pedal += 5;
 			}
 			else {
-				pedal = 0;
+				pedal -= 2;
 			}
-
+			
+			pedal = AxU.clamp(pedal, 0, 300);
+			
+			//body.force.x = pedal * Math.cos(Util.degreesToRadians(-angle));
+			//body.force.y = pedal * -Math.sin(Util.degreesToRadians( -angle));
+			
 			body.velocity.x = pedal * Math.cos(Util.degreesToRadians(-angle));
 			body.velocity.y = pedal * -Math.sin(Util.degreesToRadians( -angle));
+			
+			if (Ax.keys.down(AxKey.RIGHT) || Ax.keys.down(AxKey.D)) {
+				angle += ROTATION * pedal/300;
+			}
+			else if (Ax.keys.down(AxKey.LEFT) || Ax.keys.down(AxKey.A)) {
+				angle -= ROTATION * pedal/300;
+			}
 		}
 	}
 

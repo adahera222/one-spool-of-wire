@@ -21,6 +21,7 @@ package states
 	import io.arkeus.tiled.TiledObject;
 	import io.arkeus.tiled.TiledMap;
 	import nape.phys.BodyType;
+	import entities.Buoy;
 	
 	/**
 	 * ...
@@ -63,7 +64,7 @@ package states
 								break;
 							case "buoy":
 								// add a buoy
-								//add(new Buoy(object.x, object.y - Tile.WIDTH));
+								add(new Buoy(object.x, object.y - Tile.WIDTH, space));
 						}
 					}
 				}
@@ -75,8 +76,8 @@ package states
 			walls = new Body(BodyType.KINEMATIC);
 			walls.shapes.add( new Polygon( Polygon.rect(0-Tile.WIDTH*2, 0, BOUNDS_THICKNESS-Tile.WIDTH, mapHeight)));
 			walls.shapes.add( new Polygon( Polygon.rect(mapWidth, 0, BOUNDS_THICKNESS, mapHeight)));
-			walls.shapes.add( new Polygon( Polygon.rect(0, 0-Tile.HEIGHT*2, mapWidth, BOUNDS_THICKNESS)));
-			walls.shapes.add( new Polygon( Polygon.rect(0, mapHeight+Tile.HEIGHT*2, mapWidth, BOUNDS_THICKNESS)));
+			walls.shapes.add( new Polygon( Polygon.rect(0, 0-Tile.HEIGHT*3, mapWidth, BOUNDS_THICKNESS)));
+			walls.shapes.add( new Polygon( Polygon.rect(0, mapHeight, mapWidth, BOUNDS_THICKNESS)));
 			walls.space = space;
 			
 			Ax.camera.bounds = new AxRect(0, 0, map.width * Tile.WIDTH, map.height * Tile.HEIGHT);
