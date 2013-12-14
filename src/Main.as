@@ -8,6 +8,7 @@ package
 	 */
 	public class Main extends Ax {		
 		public function Main() {
+			GV.currentStage = GA.TEST_STAGE;
 			super(states.GameState, 800, 600, 2, 60, true);
 		}
 
