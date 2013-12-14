@@ -1,6 +1,11 @@
 package entities 
 {
 	import flash.geom.Vector3D;
+	import nape.geom.Vec2;
+	import nape.phys.Body;
+	import nape.phys.BodyType;
+	import nape.shape.Circle;
+	import nape.space.Space;
 	import org.axgl.AxPoint;
 	import org.axgl.AxSprite;
 	import org.axgl.Ax;
@@ -18,23 +23,28 @@ package entities
 		private const ROTATION:Number = Math.PI/4;
 		
 		private var pedal:Number;
+		private var body:Body;
 		
-		public function Player(x:Number, y:Number) 
+		public function Player(x:Number, y:Number, space:Space) 
 		{
 			super(x, y, GA.BOAT);
 			
 			pedal = 0.0;
 			
-			drag = new AxVector(100.0, 100.0, 0.0);
-			
 			origin = new AxPoint(Tile.WIDTH / 2, Tile.HEIGHT / 2);
 			
-			maxVelocity.x = 200;
-			maxVelocity.y = 200;
+			body = new Body(BodyType.DYNAMIC);
+			body.shapes.add(new Circle(Tile.WIDTH / 2));
+			body.position = new Vec2(x, y);
+			body.space = space;
 		}
 		
 		override public function update():void {
 			super.update();
+			
+			x = body.position.x;
+			y = body.position.y;
+			
 			if (Ax.keys.down(AxKey.RIGHT) || Ax.keys.down(AxKey.D)) {
 				angle += ROTATION;
 			}
@@ -43,17 +53,14 @@ package entities
 			}
 			
 			if (Ax.keys.down(AxKey.SPACE)) {
-				pedal = 50;
+				pedal = 150;
 			}
 			else {
 				pedal = 0;
 			}
-			
-			acceleration.x = pedal * Math.cos(Util.degreesToRadians(-angle));
-			acceleration.y = pedal * -Math.sin(Util.degreesToRadians(-angle));
-			
-			FlashConnect.trace(acceleration);
-			FlashConnect.trace(angle);
+
+			body.velocity.x = pedal * Math.cos(Util.degreesToRadians(-angle));
+			body.velocity.y = pedal * -Math.sin(Util.degreesToRadians( -angle));
 		}
 	}
 
