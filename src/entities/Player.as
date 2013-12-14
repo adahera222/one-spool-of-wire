@@ -25,7 +25,8 @@ package entities
 		private const MASS:Number = 1;
 		
 		private var pedal:Number;
-		private var body:Body;
+		
+		public var body:Body;
 		
 		public function Player(x:Number, y:Number, space:Space) 
 		{

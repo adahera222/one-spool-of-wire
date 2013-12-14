@@ -60,7 +60,7 @@ package states
 						switch(object.type) {
 							case "player":
 								// add the main player
-								add(player = new Player(object.x, object.y - Tile.WIDTH, space));
+								add(GV.player = player = new Player(object.x, object.y - Tile.WIDTH, space));
 								break;
 							case "buoy":
 								// add a buoy

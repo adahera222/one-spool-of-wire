@@ -8,7 +8,10 @@ package entities
 	import nape.phys.BodyType
 	import nape.shape.Circle;
 	import nape.geom.Vec2;
-	
+	import org.axgl.AxU;
+	import org.axgl.Ax;
+	import Array;
+	import org.flashdevelop.utils.FlashConnect;
 	/**
 	 * ...
 	 * @author Chris Cacciatore
@@ -16,7 +19,15 @@ package entities
 	public class Buoy extends AxSprite 
 	{
 		private const MASS:Number = 1000.0;
+		private const MAX_CIRCLING_DISTANCE:Number = 300.0;
+		private const SAMPLE_RATE:Number = 0.2;
+		private const MIN_SAMPLE_SIZE:uint = 16;
+		
 		private var body:Body;
+		
+		private var circlingPoints:Array;
+		private var dtSample:Number;
+		private var circled:Boolean;
 		
 		public function Buoy(x:Number, y:Number, space:Space) 
 		{
@@ -30,6 +41,10 @@ package entities
 			body.setShapeMaterials(Material.rubber());
 			body.mass = MASS;
 			body.space = space;
+			
+			circlingPoints = new Array();
+			circled = false;
+			dtSample = 0.0;
 		}
 		
 		override public function update():void {
@@ -37,6 +52,48 @@ package entities
 			
 			x = body.position.x;
 			y = body.position.y;
+			
+			updateStateIfPlayerNear();
+		}
+		
+		private function updateStateIfPlayerNear():void {
+			dtSample += Ax.dt;
+			if(!circled && dtSample >= SAMPLE_RATE){
+				if (calculateDistance(GV.player.body.position) < MAX_CIRCLING_DISTANCE) {
+					circlingPoints.push(GV.player.body.position.copy());
+					if (circlingPoints.length >= MIN_SAMPLE_SIZE){
+						circled = isEclosed();
+					}
+					
+					if (circled) {
+						grow(1, 2, 2);
+					}
+				}
+				else {
+					circlingPoints = new Array();
+				}
+				dtSample = 0.0;
+			}
+		}
+		
+		/* http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html */
+		private function isEclosed():Boolean {
+			var enclosed:Boolean = false;
+			var p1:Vec2;
+			var p2:Vec2;
+			for (var i:uint = 0, j:uint = circlingPoints.length - 1; i < circlingPoints.length; j = i++) {
+				p1 = circlingPoints[i];
+				p2 = circlingPoints[j];
+				
+				if (((p1.y > y) != (p2.y > y)) && (x < (p2.x - p1.x) * (y - p1.y) / (p2.y - p1.y) + p1.x)) {
+					enclosed = !enclosed;
+				}
+			}
+			return enclosed;
+		}
+		
+		private function calculateDistance(position:Vec2):Number {
+			return Vec2.distance(body.position, position);
 		}
 		
 	}
