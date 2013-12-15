@@ -124,7 +124,6 @@ package states
 		}
 		
 		public function loseGame():void {
-			FlashConnect.trace("here");
 			if (!gameDone) {
 				FlashConnect.trace("You lose!");
 				this.addTimer(3, reallyLoseGame);
@@ -137,7 +136,7 @@ package states
 		}
 		
 		public function reallyWinGame():void {
-			incrementStage();
+			incrementStage();  
 			Ax.switchState(new GameState());
 		}
 		

@@ -150,6 +150,7 @@ package org.axgl {
 		 * Read-only. The camera object. Use this set the bounds where your camera can move, set it to follow objects, etc.
 		 */
 		public static var camera:AxCamera;
+		public static var camera2:AxCamera;
 
 		/**
 		 * Read-only. A group containing all the currently active sounds, including music.
@@ -497,6 +498,8 @@ package org.axgl {
 			AxResource.initialize();
 			camera = new AxCamera;
 			camera.initialize();
+			camera2 = new AxCamera;
+			camera2.initialize();
 			debugger = new AxDebugger;
 			logger.log(LIBRARY_NAME + " " + LIBRARY_VERSION + " successfully loaded");
 			logger.console = true;
@@ -595,6 +598,8 @@ package org.axgl {
 			}
 			
 			camera.update();
+			camera2.update();
+			
 			mouse.update(mouseX, mouseY);
 			sounds.update();
 		}
@@ -615,6 +620,7 @@ package org.axgl {
 			}
 			
 			camera.draw();
+			camera2.draw();
 			
 			if (debugger.active) {
 				debugger.draw();

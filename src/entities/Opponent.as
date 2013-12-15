@@ -169,10 +169,11 @@ package entities
 						else {
 							nextBuoyNumber++;
 							nextBuoyCorner = TOP_RIGHT;
-							nextBuoyNumber = nextBuoyNumber % GV.buoys.length;
+							
 							if (nextBuoyNumber >= GV.buoys.length) {
 								GV.game.loseGame();
 							}
+							nextBuoyNumber = nextBuoyNumber % GV.buoys.length;
 						}
 						break;
 				}
