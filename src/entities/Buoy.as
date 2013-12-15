@@ -19,17 +19,18 @@ package entities
 	public class Buoy extends AxSprite 
 	{
 		private const MASS:Number = 1000.0;
-		private const MAX_CIRCLING_DISTANCE:Number = 300.0;
+		private const MAX_CIRCLING_DISTANCE:Number = 275.0;
 		private const SAMPLE_RATE:Number = 0.2;
 		private const MIN_SAMPLE_SIZE:uint = 16;
 		
-		private var body:Body;
+		public var body:Body;
 		
 		private var circlingPoints:Array;
 		private var dtSample:Number;
 		private var circled:Boolean;
+		public var order:uint;
 		
-		public function Buoy(x:Number, y:Number, space:Space) 
+		public function Buoy(x:Number, y:Number, space:Space, order:uint) 
 		{
 			super(x, y, GA.BUOY);
 			
@@ -45,6 +46,8 @@ package entities
 			circlingPoints = new Array();
 			circled = false;
 			dtSample = 0.0;
+			
+			this.order = order;
 		}
 		
 		override public function update():void {
@@ -58,7 +61,8 @@ package entities
 		
 		private function updateStateIfPlayerNear():void {
 			dtSample += Ax.dt;
-			if(!circled && dtSample >= SAMPLE_RATE){
+			// only test for being circled if we haven't already been circled, we are the next in line to be circled, and it is time to sample
+			if(!circled && GV.buoys[GV.nextBuoyPlayerNumber] == this && dtSample >= SAMPLE_RATE){
 				if (calculateDistance(GV.player.body.position) < MAX_CIRCLING_DISTANCE) {
 					circlingPoints.push(GV.player.body.position.copy());
 					if (circlingPoints.length >= MIN_SAMPLE_SIZE){
@@ -67,6 +71,8 @@ package entities
 					
 					if (circled) {
 						grow(1, 2, 2);
+						GV.nextBuoyPlayerNumber++;
+						FlashConnect.trace("Buoy " + order + " circled.");
 					}
 				}
 				else {

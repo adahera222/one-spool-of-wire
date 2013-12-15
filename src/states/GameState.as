@@ -1,6 +1,7 @@
 package states 
 {
 	import entities.Player;
+	import flash.events.GameInputEvent;
 	import nape.geom.Vec2;
 	import nape.phys.Body;
 	import nape.shape.Circle;
@@ -22,7 +23,7 @@ package states
 	import io.arkeus.tiled.TiledMap;
 	import nape.phys.BodyType;
 	import entities.Buoy;
-	
+	import entities.Opponent;
 	/**
 	 * ...
 	 * @author Chris Cacciatore
@@ -46,6 +47,9 @@ package states
 			var tmpTilemap:AxTilemap;
 			var tmpTileLayer:TiledTileLayer;
 			
+			GV.nextBuoyPlayerNumber = 0;
+			GV.buoys = new Array();
+			
 			for each(var layer:TiledLayer in map.layers.getAllLayers()) {
 				if (layer.name == "Background") {
 					tmpTilemap = new AxTilemap();
@@ -64,11 +68,20 @@ package states
 								break;
 							case "buoy":
 								// add a buoy
-								add(new Buoy(object.x, object.y - Tile.WIDTH, space));
+								var buoy:Buoy = new Buoy(object.x, object.y - Tile.WIDTH, space, parseInt(object.properties.get("order")));
+								add(buoy);
+								GV.buoys.push(buoy);
+								break;
+							case "opponent":
+								// add an opponent
+								add(new Opponent(object.x, object.y - Tile.WIDTH, space));
+								break;
 						}
 					}
 				}
 			}
+			
+			GV.buoys.sortOn("order");
 			
 			var mapHeight:Number = map.height * map.tileHeight;
 			var mapWidth:Number = map.width * map.tileWidth;
@@ -91,7 +104,22 @@ package states
 				Ax.pushState(new PauseState());
 			}
 			
+			if (gameIsWon()) {
+				FlashConnect.trace("Stage complete!");
+				incrementStage();
+				Ax.switchState(new GameState());
+			}
 			space.step( 1 / 60 );
+		}
+		
+		private function gameIsWon():Boolean {
+			return GV.nextBuoyPlayerNumber > GV.buoys.length-1;
+		}
+		
+		private function incrementStage():void {
+			if (GV.currentStage == GA.TEST_STAGE) {
+				GV.currentStage = GA.TEST_STAGE;
+			}
 		}
 		
 	}
