@@ -28,7 +28,7 @@ package entities
 		private const STEERING_EPSILON:Number = 5;
 		
 		private const ROTATION:Number = 2;
-		private const MASS:Number = 1;
+		private const MASS:Number = 10;
 		
 		private const LEFT:uint = 1;
 		private const RIGHT:uint = 2;

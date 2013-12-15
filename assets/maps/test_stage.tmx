@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="background" tilewidth="32" tileheight="32">
-  <image source="../gfx/tileset.png" width="32" height="32"/>
+  <image source="../gfx/tileset.png" width="256" height="32"/>
  </tileset>
- <tileset firstgid="2" name="boats" tilewidth="32" tileheight="32">
+ <tileset firstgid="9" name="boats" tilewidth="32" tileheight="32">
   <image source="../gfx/boat.png" width="32" height="32"/>
  </tileset>
- <tileset firstgid="3" name="buoys" tilewidth="32" tileheight="32">
-  <image source="../gfx/buoys.png" width="32" height="32"/>
+ <tileset firstgid="10" name="buoys" tilewidth="32" tileheight="32">
+  <image source="../gfx/buoys.png" width="256" height="64"/>
  </tileset>
- <tileset firstgid="4" name="opponent" tilewidth="32" tileheight="32">
+ <tileset firstgid="26" name="opponent" tilewidth="32" tileheight="32">
   <image source="../gfx/boat_1.png" width="32" height="32"/>
  </tileset>
  <layer name="Background" width="100" height="100">
@@ -18,24 +18,24 @@
   </data>
  </layer>
  <objectgroup name="Entities" width="100" height="100">
-  <object type="player" gid="2" x="96" y="160"/>
-  <object type="buoy" gid="3" x="160" y="224">
+  <object type="player" gid="9" x="96" y="160"/>
+  <object type="buoy" gid="10" x="160" y="224">
    <properties>
     <property name="order" value="1"/>
    </properties>
   </object>
-  <object type="buoy" gid="3" x="544" y="192">
+  <object type="buoy" gid="10" x="544" y="192">
    <properties>
     <property name="order" value="2"/>
    </properties>
   </object>
-  <object type="buoy" gid="3" x="448" y="448">
+  <object type="buoy" gid="10" x="448" y="448">
    <properties>
     <property name="order" value="3"/>
    </properties>
   </object>
-  <object type="opponent" gid="4" x="352" y="96"/>
-  <object type="opponent" gid="4" x="352" y="96"/>
-  <object type="opponent" gid="4" x="160" y="448"/>
+  <object type="opponent" gid="26" x="352" y="96"/>
+  <object type="opponent" gid="26" x="352" y="96"/>
+  <object type="opponent" gid="26" x="160" y="448"/>
  </objectgroup>
 </map>

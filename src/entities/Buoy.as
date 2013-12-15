@@ -19,7 +19,7 @@ package entities
 	 */
 	public class Buoy extends AxSprite 
 	{
-		private const MASS:Number = 10.0;
+		private const MASS:Number = 30.0;
 		private const MAX_CIRCLING_DISTANCE:Number = 275.0;
 		private const SAMPLE_RATE:Number = 0.1;
 		private const MIN_SAMPLE_SIZE:uint = 16;
@@ -30,8 +30,6 @@ package entities
 		private var dtSample:Number;
 		private var circled:Boolean;
 		public var order:uint;
-		
-		private var swaying:Boolean;
 		
 		public function Buoy(x:Number, y:Number, space:Space, order:uint) 
 		{
@@ -51,31 +49,29 @@ package entities
 			dtSample = 0.0;
 			
 			this.order = order;
-			swaying = false;
-		}
-		
-		private function swayRight():void {
-			addTimer(2 + AxU.randf(0.0,1.0), swayLeft);
-			body.velocity.setxy(3.0,0)
-		}  
-		
-		private function swayLeft():void {
-			addTimer(2 + AxU.randf(0.0, 1.0), swayRight);
-			body.velocity.setxy(-3.0,0)
 		}
 		
 		override public function update():void {
 			super.update();
 			
-			if (!swaying) {
-				swaying = true;
-				swayRight();
-			}
-			
 			x = body.position.x;
 			y = body.position.y;
 			
 			updateStateIfPlayerNear();
+			
+			if (body.velocity.x > 0) {
+				body.velocity.x -= 2;
+			}
+			else if (body.velocity.x < 0) {
+				body.velocity.x += 2;
+			}
+			
+			if (body.velocity.y > 0) {
+				body.velocity.y -= 2;
+			}
+			else if (body.velocity.x < 0) {
+				body.velocity.y += 2;
+			}
 		}
 		
 		private function updateStateIfPlayerNear():void {

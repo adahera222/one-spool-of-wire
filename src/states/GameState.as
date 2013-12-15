@@ -25,6 +25,12 @@ package states
 	import entities.Buoy;
 	import entities.Opponent;
 	import org.axgl.util.AxTimer;
+	import org.axgl.AxU;
+	import org.axgl.camera.AxCamera;
+	import com.greensock.TweenMax;
+	import com.greensock.easing.BounceInOut;
+	import com.greensock.easing.ElasticOut;
+	
 	/**
 	 * ...
 	 * @author Chris Cacciatore
@@ -38,6 +44,11 @@ package states
 		private var walls:Body;
 		
 		private var gameDone:Boolean;
+		
+		private var swayTween:TweenMax;
+		
+		private var transitionX:Boolean;
+		private var transitionY:Boolean;
 		
 		public function GameState() {
 			space = new Space(null);
@@ -100,7 +111,12 @@ package states
 			walls.space = space;
 			
 			Ax.camera.bounds = new AxRect(0, 0, map.width * Tile.WIDTH, map.height * Tile.HEIGHT);
-			Ax.camera.follow(player);
+			//Ax.camera.follow(player);
+			
+			swayTween = TweenMax.to(Ax.camera, 1.2, { y:Ax.camera.y + 7, ease:BounceInOut, yoyo:true, repeat: -1 } );
+			
+			transitionX = false;
+			transitionY = false;
 			
 			FlashConnect.trace("GameState created.");
 		}
@@ -117,6 +133,30 @@ package states
 				gameDone = true;
 			}
 			space.step( 1 / 60 );
+			
+			if ((player.x + player.width > Ax.camera.x + 800) && !transitionX) {
+				transitionX = true;
+				TweenMax.to(Ax.camera, 1.5, { x:800, ease:ElasticOut, onComplete:function() { transitionX = false; } } );
+			}
+			else if ((player.x < Ax.camera.x && player.x > 64) && !transitionX) {
+				transitionX = true;
+				TweenMax.to(Ax.camera, 1.5, { x: Ax.camera.x - 800,ease:ElasticOut, onComplete:function() { transitionX = false; } });
+			}
+			
+			if ((player.y + Tile.HEIGHT > Ax.camera.y + 600) && !transitionY) {
+				transitionY = true;
+				TweenMax.to(Ax.camera, 1.5, { y: Ax.camera.y + 600, ease:ElasticOut, onComplete:startSwayAgain} );
+			}
+			else if ((player.y < Ax.camera.y && player.y > 64) && !transitionY) {
+				transitionY = true;
+				TweenMax.to(Ax.camera, 1.5, { y: Ax.camera.y - 600, ease:ElasticOut, onComplete:startSwayAgain } );
+			}
+		}
+		
+		public function startSwayAgain():void {
+			transitionY = false;
+			swayTween.kill();
+			swayTween = TweenMax.to(Ax.camera, 1.2, {y:Ax.camera.y+7,ease:BounceInOut, yoyo:true, repeat:-1});
 		}
 		
 		private function gameIsWon():Boolean {

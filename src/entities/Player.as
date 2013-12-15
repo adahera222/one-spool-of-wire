@@ -22,7 +22,7 @@ package entities
 	public class Player extends AxSprite 
 	{
 		private const ROTATION:Number = 2;
-		private const MASS:Number = 1;
+		private const MASS:Number = 10;
 		
 		private var pedal:Number;
 		
