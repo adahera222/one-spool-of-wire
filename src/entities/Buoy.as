@@ -20,7 +20,7 @@ package entities
 	{
 		private const MASS:Number = 1000.0;
 		private const MAX_CIRCLING_DISTANCE:Number = 275.0;
-		private const SAMPLE_RATE:Number = 0.2;
+		private const SAMPLE_RATE:Number = 0.1;
 		private const MIN_SAMPLE_SIZE:uint = 16;
 		
 		public var body:Body;

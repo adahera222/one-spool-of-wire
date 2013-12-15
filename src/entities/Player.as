@@ -59,18 +59,20 @@ package entities
 			
 			pedal = AxU.clamp(pedal, 0, 300);
 			
-			//body.force.x = pedal * Math.cos(Util.degreesToRadians(-angle));
-			//body.force.y = pedal * -Math.sin(Util.degreesToRadians( -angle));
-			
 			body.velocity.x = pedal * Math.cos(Util.degreesToRadians(-angle));
 			body.velocity.y = pedal * -Math.sin(Util.degreesToRadians( -angle));
 			
 			if (Ax.keys.down(AxKey.RIGHT) || Ax.keys.down(AxKey.D)) {
-				angle += ROTATION * pedal/300;
+				angle += 1+ROTATION * pedal/300;
 			}
 			else if (Ax.keys.down(AxKey.LEFT) || Ax.keys.down(AxKey.A)) {
-				angle -= ROTATION * pedal/300;
+				angle -= 1+ROTATION * pedal/300;
 			}
+			
+			if (angle < 0) {
+				angle += 360;
+			}
+			angle = angle % 361;
 		}
 	}
 

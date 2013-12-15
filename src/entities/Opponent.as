@@ -1,4 +1,4 @@
-package entities 
+package entities
 {
 	import flash.geom.Vector3D;
 	import nape.geom.Vec2;
@@ -19,17 +19,13 @@ package entities
 	 * ...
 	 * @author Chris Cacciatore
 	 */
-	public class Opponent extends AxSprite 
+	public class Opponent extends AxSprite
 	{
 		
-		private const MAX_CIRCLING_DISTANCE:Number = 200.0;
+		private const MAX_CIRCLING_DISTANCE:Number = 400.0;
 		private const SAMPLE_RATE:Number = 0.2;
 		private const MIN_SAMPLE_SIZE:uint = 16;
 		private const STEERING_EPSILON:Number = 5;
-		
-		private var circlingPoints:Array;
-		private var dtSample:Number;
-		private var circled:Boolean;
 		
 		private const ROTATION:Number = 2;
 		private const MASS:Number = 1;
@@ -44,12 +40,19 @@ package entities
 		
 		private var speed:uint;
 		private var nextBuoyNumber:uint;
+		private var nextBuoyCorner:uint;
+		
+		private const TOP_RIGHT:uint = 0;
+		private const BOTTOM_RIGHT:uint = 1;
+		private const BOTTOM_LEFT:uint = 2;
+		private const TOP_LEFT:uint = 3;
+		private const TOP_RIGHT_AGAIN:uint = 4;
 		
 		private const FAST:uint = 3;
 		private const MEDIUM:uint = 2;
 		private const SLOW:uint = 1;
-		
-		public function Opponent(x:Number, y:Number, space:Space) 
+	
+		public function Opponent(x:Number, y:Number, space:Space)
 		{
 			super(x, y, GA.BOAT_1);
 			
@@ -64,155 +67,175 @@ package entities
 			body.setShapeMaterials(Material.wood());
 			body.space = space;
 			
-			nextBuoyNumber = 2;
+			nextBuoyNumber = 0;
 			
 			pedalMax = 0;
+			nextBuoyCorner = TOP_RIGHT;
 		}
 		
-		private function navigate():uint {
-			var targetBuoy:Buoy = GV.buoys[nextBuoyNumber];
+		private function headTo(position:Vec2):uint
+		{
 			var direction:uint = 0;
+			
+			var targetX:Number = position.x;
+			var targetY:Number = position.y;
+			
+			var dlat:Number = targetX - x;
+			var dlon:Number = targetY - y;
+			
+			var tc1:Number;
+			
+			var d:Number = calculateDistance(position);
+			
+			var heading:Number = Util.radiansToDegrees(Math.atan2(dlon, dlat));
+			
+			angle += (heading - angle);
+			// eventually get smoother turning
+			
+			//if (heading > angle) {
+				//direction = RIGHT;
+			//	angle = angle + heading / 5;
+			//}
+			//else if(heading < angle){
+				//direction = LEFT;
+			//	angle 
+			//}
+			return direction;
+		}
+		
+		private function navigate():uint
+		{
+			var targetBuoy:Buoy = GV.buoys[nextBuoyNumber];
+			var direction:uint;
 			var d:Number;
 			
+			FlashConnect.trace(targetBuoy);
+			var topRight:Vec2 = new Vec2(targetBuoy.body.position.x + 128, targetBuoy.body.position.y -128);
+			var bottomRight:Vec2 = new Vec2(targetBuoy.body.position.x + 128, targetBuoy.body.position.y +128);
+			var bottomLeft:Vec2 = new Vec2(targetBuoy.body.position.x -128, targetBuoy.body.position.y +128);
+			var topLeft:Vec2 = new Vec2(targetBuoy.body.position.x - 128, targetBuoy.body.position.y -128);
+			
 			speed = NONE;
-			if ((d = calculateDistance(targetBuoy.body.position)) >= MAX_CIRCLING_DISTANCE) {
-				var targetX:Number = targetBuoy.body.position.x;
-				var targetY:Number = targetBuoy.body.position.y;
-				
-				var dlat:Number = targetX - x;
-				var dlon:Number = targetY - y;
-				
-				var tmpY:Number = Math.sin(dlon) * Math.cos(targetX);
-				var tmpX:Number = Math.cos(x) * Math.sin(targetY) - Math.sin(x) * Math.cos(targetX) * Math.cos(dlon);
-				
-				var tc1:Number;
-				if(tmpY > 0){
-					if (tmpX > 0)
-						tc1 = Math.atan(tmpY / tmpX);
-						if(Math.abs(angle - tc1) > 15){
-							direction = LEFT;
-						}
-					if (tmpX < 0)
-						tc1 = 180 - Math.atan( -tmpY / tmpX);
-						if(Math.abs(angle - tc1) > 15){
-							direction = RIGHT;
-						}
-					if (tmpX == 0){
-						tc1 = 90;
-					}
-				}
-				if(tmpY < 0){
-					if (tmpX > 0){
-						tc1 = -Math.atan( -tmpY / tmpX);
-						if(Math.abs(angle - tc1) > 15){
-							direction = LEFT;
-						}
-					}
-					if (tmpX < 0){
-						tc1 = Math.atan(tmpY / tmpX) - 180;
-						if(Math.abs(angle - tc1) > 15){
-							direction = RIGHT;
-						}
-					}
-					if (tmpX == 0){
-						tc1 = 270;
-					}
-				}
-				if(tmpY == 0){
-					if (tmpX > 0)
-						tc1 = 0;
-					if (tmpX < 0)
-						tc1 = 180;
-				}
+			direction = 0;
+			if ((d = calculateDistance(targetBuoy.body.position)) >= MAX_CIRCLING_DISTANCE)
+			{
+				direction = headTo(targetBuoy.body.position);
 				speed = FAST;
+				nextBuoyCorner = TOP_RIGHT;
 			}
-			// if not in range of next buoy, then get closer
-			// else move to upper right corner
-			// else move to lower right corner
-			// else move to lower left corner
-			// else move to upper left corner
-			// else move to upper right corner
+			else {
+				speed = FAST;
+				switch(nextBuoyCorner) {
+					case TOP_RIGHT:
+						FlashConnect.trace("Heading for top right corner");
+						// check if made it
+						if (calculateDistance(topRight) >= 96) {
+							direction = headTo(topRight);
+						}
+						else {
+							nextBuoyCorner++;
+						}
+						break;
+					case BOTTOM_RIGHT:
+						FlashConnect.trace("Heading for bottom right corner");
+						// check if made it
+						if (calculateDistance(bottomRight) >= 96) {
+							headTo(bottomRight);
+						}
+						else {
+							nextBuoyCorner++;
+						}
+						break;
+					case BOTTOM_LEFT:
+						FlashConnect.trace("Heading for top right corner");
+						// check if made it
+						if (calculateDistance(bottomLeft) >= 96) {
+							headTo(bottomLeft);
+						}
+						else {
+							nextBuoyCorner++;
+						}
+						break;
+					case TOP_LEFT:
+						FlashConnect.trace("Heading for top left corner");
+						// check if made it
+						if (calculateDistance(topLeft) >= 96) {
+							headTo(topLeft);
+						}
+						else {
+							nextBuoyCorner++;
+						}
+						break;
+					case TOP_RIGHT_AGAIN:
+						FlashConnect.trace("Heading for top right corner again");
+						// check if made it
+						if (calculateDistance(topRight) >= 96) {
+							headTo(topRight);
+						}
+						else {
+							nextBuoyNumber++;
+							nextBuoyCorner = TOP_RIGHT;
+							nextBuoyNumber = nextBuoyNumber % GV.buoys.length;
+							if (nextBuoyNumber >= GV.buoys.length) {
+								GV.game.loseGame();
+							}
+						}
+						break;
+				}
+			}
 			
 			// if aggressive and nearby opponent or player is ranked closely, then bump
 			return direction;
 		}
 		
-		private function updateStateIfPlayerNear():void {
-			dtSample += Ax.dt;
-			// only test for being circled if we haven't already been circled, we are the next in line to be circled, and it is time to sample
-			if(!circled && GV.buoys[GV.nextBuoyPlayerNumber] == this && dtSample >= SAMPLE_RATE){
-				if (calculateDistance(GV.player.body.position) < MAX_CIRCLING_DISTANCE) {
-					circlingPoints.push(GV.player.body.position.copy());
-					if (circlingPoints.length >= MIN_SAMPLE_SIZE){
-						circled = isEclosed();
-					}
-					
-					if (circled) {
-						nextBuoyNumber++;
-					}
-				}
-				else {
-					circlingPoints = new Array();
-				}
-				dtSample = 0.0;
-			}
-		}
-		
-		/* http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html */
-		private function isEclosed():Boolean {
-			var enclosed:Boolean = false;
-			var p1:Vec2;
-			var p2:Vec2;
-			for (var i:uint = 0, j:uint = circlingPoints.length - 1; i < circlingPoints.length; j = i++) {
-				p1 = circlingPoints[i];
-				p2 = circlingPoints[j];
-				
-				if (((p1.y > y) != (p2.y > y)) && (x < (p2.x - p1.x) * (y - p1.y) / (p2.y - p1.y) + p1.x)) {
-					enclosed = !enclosed;
-				}
-			}
-			return enclosed;
-		}
-		
-		private function calculateDistance(position:Vec2):Number {
+		private function calculateDistance(position:Vec2):Number
+		{
 			return Vec2.distance(body.position, position);
 		}
 		
-		override public function update():void {
+		override public function update():void
+		{
 			super.update();
 			
 			x = body.position.x;
 			y = body.position.y;
-			
-			switch(speed) {
-				case FAST:
+		
+			switch (speed)
+			{
+				case FAST: 
 					pedal += 50;
 					pedalMax = 300;
 					break;
-				case MEDIUM:
+				case MEDIUM: 
 					pedal += 25;
 					pedalMax = 200;
 					break;
-				case SLOW:
+				case SLOW: 
 					pedal += 10;
 					pedalMax = 100;
-				default:
+				default: 
 					pedal -= 2;
 			}
-			
+
 			pedal = AxU.clamp(pedal, 0, pedalMax);
 			
 			body.velocity.x = pedal * Math.cos(Util.degreesToRadians(-angle));
-			body.velocity.y = pedal * -Math.sin(Util.degreesToRadians( -angle));
+			body.velocity.y = pedal * -Math.sin(Util.degreesToRadians(-angle));
 			
-			switch(navigate()) {
-				case LEFT:
-					angle -= ROTATION * pedal / 300;
+			switch (navigate())
+			{
+				case LEFT: 
+					angle -= (ROTATION * pedal / 300) + 1.5;
 					break;
-				case RIGHT:
-					angle += ROTATION * pedal / 300;
+				case RIGHT: 
+					angle += (ROTATION * pedal / 300) + 1.5;
 					break;
 			}
+			
+			if (angle < 0) {
+				angle += 360;
+			}
+			angle = angle % 361;
 		}
 	}
 

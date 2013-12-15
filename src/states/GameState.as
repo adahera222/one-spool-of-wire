@@ -38,6 +38,8 @@ package states
 		
 		public function GameState() {
 			space = new Space(null);
+			
+			GV.game = this;
 		}
 		
 		override public function create():void {			
@@ -95,6 +97,7 @@ package states
 			
 			Ax.camera.bounds = new AxRect(0, 0, map.width * Tile.WIDTH, map.height * Tile.HEIGHT);
 			Ax.camera.follow(player);
+			
 			FlashConnect.trace("GameState created.");
 		}
 		
@@ -114,6 +117,11 @@ package states
 		
 		private function gameIsWon():Boolean {
 			return GV.nextBuoyPlayerNumber > GV.buoys.length-1;
+		}
+		
+		public function loseGame():void {
+			FlashConnect.trace("You lose!");
+			Ax.switchState(new GameState());
 		}
 		
 		private function incrementStage():void {

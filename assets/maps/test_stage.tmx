@@ -34,6 +34,8 @@
     <property name="order" value="3"/>
    </properties>
   </object>
-  <object type="opponent" gid="4" x="96" y="96"/>
+  <object type="opponent" gid="4" x="352" y="96"/>
+  <object type="opponent" gid="4" x="352" y="96"/>
+  <object type="opponent" gid="4" x="160" y="448"/>
  </objectgroup>
 </map>

@@ -1,6 +1,7 @@
 package  
 {
 	import entities.Player;
+	import states.GameState;
 	/**
 	 * ...
 	 * @author Chris Cacciatore
@@ -14,6 +15,8 @@ package
 		public static var countBuoys:uint;
 		
 		public static var buoys:Array;
+		
+		public static var game:GameState;
 	}
 
 }
