@@ -54,14 +54,16 @@ package entities
 	
 		public function Opponent(x:Number, y:Number, space:Space)
 		{
-			super(x, y, GA.BOAT_1);
+			super(x, y);
+			load(GA.BOAT_1 , Tile.WIDTH*2, Tile.HEIGHT*2);
+            addAnimation("idle", [0], 1, false);
+			
+			animate("idle");
 			
 			pedal = 0.0;
 			
-			origin = new AxPoint(Tile.WIDTH / 2, Tile.HEIGHT / 2);
-			
 			body = new Body(BodyType.DYNAMIC);
-			body.shapes.add(new Circle(Tile.WIDTH / 2));
+			body.shapes.add(new Circle(Tile.WIDTH));
 			body.position = new Vec2(x, y);
 			body.mass = MASS;
 			body.setShapeMaterials(Material.wood());

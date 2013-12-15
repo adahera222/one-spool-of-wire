@@ -37,5 +37,10 @@
   <object type="opponent" gid="26" x="352" y="96"/>
   <object type="opponent" gid="26" x="352" y="96"/>
   <object type="opponent" gid="26" x="160" y="448"/>
+  <object type="buoy" gid="10" x="1856" y="256">
+   <properties>
+    <property name="order" value="4"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

@@ -60,17 +60,17 @@ package entities
 			updateStateIfPlayerNear();
 			
 			if (body.velocity.x > 0) {
-				body.velocity.x -= 2;
+				body.velocity.x -= 1.5;
 			}
 			else if (body.velocity.x < 0) {
-				body.velocity.x += 2;
+				body.velocity.x += 1.5;
 			}
 			
 			if (body.velocity.y > 0) {
-				body.velocity.y -= 2;
+				body.velocity.y -= 1.5;
 			}
 			else if (body.velocity.x < 0) {
-				body.velocity.y += 2;
+				body.velocity.y += 1.5;
 			}
 		}
 		

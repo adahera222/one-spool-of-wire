@@ -136,7 +136,7 @@ package states
 			
 			if ((player.x + player.width > Ax.camera.x + 800) && !transitionX) {
 				transitionX = true;
-				TweenMax.to(Ax.camera, 1.5, { x:800, ease:ElasticOut, onComplete:function() { transitionX = false; } } );
+				TweenMax.to(Ax.camera, 1.5, { x:Ax.camera.x+800, ease:ElasticOut, onComplete:function() { transitionX = false; } } );
 			}
 			else if ((player.x < Ax.camera.x && player.x > 64) && !transitionX) {
 				transitionX = true;
