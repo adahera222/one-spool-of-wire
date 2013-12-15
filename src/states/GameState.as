@@ -24,6 +24,7 @@ package states
 	import nape.phys.BodyType;
 	import entities.Buoy;
 	import entities.Opponent;
+	import org.axgl.util.AxTimer;
 	/**
 	 * ...
 	 * @author Chris Cacciatore
@@ -35,6 +36,8 @@ package states
 		private var space:Space;
 		private var player:Player;
 		private var walls:Body;
+		
+		private var gameDone:Boolean;
 		
 		public function GameState() {
 			space = new Space(null);
@@ -51,6 +54,7 @@ package states
 			
 			GV.nextBuoyPlayerNumber = 0;
 			GV.buoys = new Array();
+			gameDone = false;
 			
 			for each(var layer:TiledLayer in map.layers.getAllLayers()) {
 				if (layer.name == "Background") {
@@ -107,10 +111,10 @@ package states
 				Ax.pushState(new PauseState());
 			}
 			
-			if (gameIsWon()) {
+			if (!gameDone && gameIsWon()) {
 				FlashConnect.trace("Stage complete!");
-				incrementStage();
-				Ax.switchState(new GameState());
+				this.addTimer(3, reallyWinGame);
+				gameDone = true;
 			}
 			space.step( 1 / 60 );
 		}
@@ -120,7 +124,20 @@ package states
 		}
 		
 		public function loseGame():void {
-			FlashConnect.trace("You lose!");
+			FlashConnect.trace("here");
+			if (!gameDone) {
+				FlashConnect.trace("You lose!");
+				this.addTimer(3, reallyLoseGame);
+				gameDone = true;
+			}
+		}
+		
+		public function reallyLoseGame():void {
+			Ax.switchState(new GameState());
+		}
+		
+		public function reallyWinGame():void {
+			incrementStage();
 			Ax.switchState(new GameState());
 		}
 		

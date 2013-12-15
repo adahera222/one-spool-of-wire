@@ -22,7 +22,7 @@ package entities
 	public class Opponent extends AxSprite
 	{
 		
-		private const MAX_CIRCLING_DISTANCE:Number = 400.0;
+		private const MAX_CIRCLING_DISTANCE:Number = 200.0;
 		private const SAMPLE_RATE:Number = 0.2;
 		private const MIN_SAMPLE_SIZE:uint = 16;
 		private const STEERING_EPSILON:Number = 5;
@@ -109,7 +109,6 @@ package entities
 			var direction:uint;
 			var d:Number;
 			
-			FlashConnect.trace(targetBuoy);
 			var topRight:Vec2 = new Vec2(targetBuoy.body.position.x + 128, targetBuoy.body.position.y -128);
 			var bottomRight:Vec2 = new Vec2(targetBuoy.body.position.x + 128, targetBuoy.body.position.y +128);
 			var bottomLeft:Vec2 = new Vec2(targetBuoy.body.position.x -128, targetBuoy.body.position.y +128);
@@ -124,10 +123,9 @@ package entities
 				nextBuoyCorner = TOP_RIGHT;
 			}
 			else {
-				speed = FAST;
+				speed = MEDIUM;
 				switch(nextBuoyCorner) {
 					case TOP_RIGHT:
-						FlashConnect.trace("Heading for top right corner");
 						// check if made it
 						if (calculateDistance(topRight) >= 96) {
 							direction = headTo(topRight);
@@ -137,7 +135,6 @@ package entities
 						}
 						break;
 					case BOTTOM_RIGHT:
-						FlashConnect.trace("Heading for bottom right corner");
 						// check if made it
 						if (calculateDistance(bottomRight) >= 96) {
 							headTo(bottomRight);
@@ -147,7 +144,6 @@ package entities
 						}
 						break;
 					case BOTTOM_LEFT:
-						FlashConnect.trace("Heading for top right corner");
 						// check if made it
 						if (calculateDistance(bottomLeft) >= 96) {
 							headTo(bottomLeft);
@@ -157,7 +153,6 @@ package entities
 						}
 						break;
 					case TOP_LEFT:
-						FlashConnect.trace("Heading for top left corner");
 						// check if made it
 						if (calculateDistance(topLeft) >= 96) {
 							headTo(topLeft);
@@ -167,7 +162,6 @@ package entities
 						}
 						break;
 					case TOP_RIGHT_AGAIN:
-						FlashConnect.trace("Heading for top right corner again");
 						// check if made it
 						if (calculateDistance(topRight) >= 96) {
 							headTo(topRight);
